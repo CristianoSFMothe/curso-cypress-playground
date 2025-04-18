@@ -15,10 +15,20 @@ describe('Cypress Playground', () => {
       .should('be.visible')
   });
 
-  it('Types in an input which "signs" a form, the asserts it is signed', () => {
+  it('types in an input which "signs" a form, the asserts it is signed', () => {
     cy.get('#signature-textarea').should('be.visible').type('Cristiano')
 
     cy.contains('#signature', 'Cristiano').should('be.visible')
+  });
+
+  it('types in the signature field, checks the checkbox to see preview, then unchecks it', () => {
+    cy.get('#signature-textarea-with-checkbox').type('Cristiano')
+    cy.get('#signature-checkbox').check()
+
+    cy.contains('#signature-triggered-by-check', 'Cristiano').should('be.visible')
+
+    cy.get('#signature-checkbox').uncheck()
+    cy.contains('#signature-triggered-by-check', 'Cristiano').should('not.exist')
   });
 
 
