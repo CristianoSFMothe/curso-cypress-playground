@@ -43,12 +43,21 @@ describe('Cypress Playground', () => {
     cy.contains('#on-off', 'OFF').should('not.exist')
   });
 
-  it.only('selects a type via the dropdown field and asserts on the selection', () => {
+  it('selects a type via the dropdown field and asserts on the selection', () => {
     cy.contains('p', "You haven't selected a type yet.").should('be.visible')
 
     cy.get('#selection-type').select('VIP')
 
     cy.contains('p', "You've selected: VIP").should('be.visible')
   });
+
+  it('selects multiple fruits via the dropdown field and asserts on the selection', () => {
+    cy.contains('p', "You haven't selected any fruit yet.").should('be.visible')
+
+    cy.get('#fruit').select(['apple', 'banana', 'cherry'])
+
+    cy.contains('p', "You've selected the following fruits: apple, banana, cherry").should('be.visible')
+  });
+
 
 })
