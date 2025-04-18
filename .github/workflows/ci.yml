@@ -1,6 +1,22 @@
 name: End-to-end tests
 
-on: push
+on:
+  push:
+    branches: [main]
+
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+    inputs:
+      run-tests:
+        description: "Run Cypress tests?"
+        required: true
+        default: "true"
+
+  schedule:
+    - cron: "0 7 * * *" # 07:00 UTC (ajustar se estiver em outro fuso)
+    - cron: "0 19 * * *" # 19:00 UTC
 
 jobs:
   cypress-run:
@@ -13,13 +29,27 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Decide Whether to Run Cypress
+        id: should-run
+        run: |
+          echo "RUN_TESTS=${{ github.event.inputs.run-tests || 'true' }}" >> $GITHUB_ENV
+
+      - name: Check for Forks (Skip Test if Fork)
+        id: is-fork
+        run: |
+          echo "IS_FORK=false" >> $GITHUB_ENV
+          if [[ "${{ github.event.pull_request.head.repo.fork }}" == "true" ]]; then
+            echo "IS_FORK=true" >> $GITHUB_ENV
+          fi
+
       - name: Run Cypress Tests in Cloud
+        if: env.RUN_TESTS == 'true' && env.IS_FORK != 'true'
         run: npm run test:cloud
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
       - name: Upload screenshots on failure
-        if: failure()
+        if: failure() && env.RUN_TESTS == 'true' && env.IS_FORK != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
@@ -27,7 +57,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload videos if successful
-        if: success()
+        if: success() && env.RUN_TESTS == 'true' && env.IS_FORK != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: cypress-videos

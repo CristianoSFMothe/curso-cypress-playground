@@ -31,5 +31,15 @@ describe('Cypress Playground', () => {
     cy.contains('#signature-triggered-by-check', 'Cristiano').should('not.exist')
   });
 
+  it.only('check both possible radios and asserts if it is "on" or "off"', () => {
+    cy.contains('#on-off', 'ON').should('be.visible')
 
+    cy.get('input[type="radio"][value="off"]').check()
+    cy.contains('#on-off', 'OFF').should('be.visible')
+    cy.contains('#on-off', 'ON').should('not.exist')
+
+    cy.get('input[type="radio"][value="on"]').check()
+    cy.contains('#on-off', 'ON').should('be.visible')
+    cy.contains('#on-off', 'OFF').should('not.exist')
+  });
 })
