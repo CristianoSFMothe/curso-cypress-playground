@@ -83,7 +83,7 @@ describe('Cypress Playground', () => {
     cy.contains('li', 'User ID: 1').should('be.visible')
   });
 
-  it.only('clicks a button and trigger a stubbier request', () => {
+  it('clicks a button and trigger a stubbier request', () => {
     const todo = require('../fixtures/todo')
 
     cy.intercept(
@@ -103,6 +103,26 @@ describe('Cypress Playground', () => {
     cy.contains('li', `Completed: ${todo.completed}`).should('be.visible')
     cy.contains('li', `User ID: ${todo.userId}`).should('be.visible')
   });
+
+  it('clicks a button and simulates an API failure', () => {
+    cy.intercept(
+      'GET',
+      'https://jsonplaceholder.typicode.com/todos/1',
+      { statusCode: 500 }
+    ).as('serverFailure')
+
+    cy.contains('button', 'Get TODO').click()
+
+    cy.wait('@serverFailure')
+      .its('response.statusCode')
+      .should('be.equal', 500)
+
+    cy.contains(
+      'span',
+      'Oops, something went wrong. Refresh the page and try again'
+    ).should('be.visible')
+  });
+
 
 
 
