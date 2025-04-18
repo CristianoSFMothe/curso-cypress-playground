@@ -56,8 +56,18 @@ describe('Cypress Playground', () => {
 
     cy.get('#fruit').select(['apple', 'banana', 'cherry'])
 
-    cy.contains('p', "You've selected the following fruits: apple, banana, cherry").should('be.visible')
+    cy.contains('p', "You've selected the following fruits: apple, banana, cherry")
+      .should('be.visible')
   });
+
+  it.only('uploads a file and asserts the correct file name appears as paragraph', () => {
+    cy.get('input[type="file"]').selectFile('./cypress/fixtures/example.json')
+
+    cy.contains('p', 'The following file has been selected for upload: example.json')
+      .should('be.visible')
+
+  });
+
 
 
 })
