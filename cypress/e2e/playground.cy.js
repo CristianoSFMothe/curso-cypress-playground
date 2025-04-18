@@ -31,7 +31,7 @@ describe('Cypress Playground', () => {
     cy.contains('#signature-triggered-by-check', 'Cristiano').should('not.exist')
   });
 
-  it.only('check both possible radios and asserts if it is "on" or "off"', () => {
+  it('check both possible radios and asserts if it is "on" or "off"', () => {
     cy.contains('#on-off', 'ON').should('be.visible')
 
     cy.get('input[type="radio"][value="off"]').check()
@@ -42,4 +42,13 @@ describe('Cypress Playground', () => {
     cy.contains('#on-off', 'ON').should('be.visible')
     cy.contains('#on-off', 'OFF').should('not.exist')
   });
+
+  it.only('selects a type via the dropdown field and asserts on the selection', () => {
+    cy.contains('p', "You haven't selected a type yet.").should('be.visible')
+
+    cy.get('#selection-type').select('VIP')
+
+    cy.contains('p', "You've selected: VIP").should('be.visible')
+  });
+
 })

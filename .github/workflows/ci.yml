@@ -15,8 +15,8 @@ on:
         default: "true"
 
   schedule:
-    - cron: "0 7 * * *" # 07:00 UTC (ajustar se estiver em outro fuso)
-    - cron: "0 19 * * *" # 19:00 UTC
+    - cron: "0 7 * * *" # 07:00 UTC (4h da manhã no Brasil)
+    - cron: "0 19 * * *" # 19:00 UTC (16h da tarde no Brasil)
 
 jobs:
   cypress-run:
@@ -63,3 +63,26 @@ jobs:
           name: cypress-videos
           path: cypress/videos
           if-no-files-found: ignore
+
+      - name: Generate Job Summary
+        run: |
+          echo "## 🧪 Cypress End-to-End Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "**🔁 Executado manualmente:** ${{ github.event_name == 'workflow_dispatch' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**🌱 Fork externo:** ${{ env.IS_FORK }}" >> $GITHUB_STEP_SUMMARY
+          echo "**☁️ Cypress Cloud usado:** $([[ '${{ env.IS_FORK }}' == 'false' && '${{ env.RUN_TESTS }}' == 'true' ]] && echo 'Sim' || echo 'Não')" >> $GITHUB_STEP_SUMMARY
+          echo "**📅 Evento:** \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**📂 Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ -d "cypress/screenshots" ]]; then
+            echo "### 📸 Screenshots disponíveis como artifact: \`cypress-screenshots\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ -d "cypress/videos" ]]; then
+            echo "### 🎥 Vídeos disponíveis como artifact: \`cypress-videos\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Esse resumo foi gerado automaticamente._" >> $GITHUB_STEP_SUMMARY
